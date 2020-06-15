@@ -14,7 +14,7 @@ namespace AutomataTransicion
             DataColumn column;
             DataRow row;
 
-            column = new DataColumn("Estado", typeof(Estado));
+            column = new DataColumn("Estado", typeof(string));
             column.Unique = true;
             data.Columns.Add(column);
 
@@ -27,7 +27,8 @@ namespace AutomataTransicion
             foreach (var estado in automata.Estados)
             {
                 row = data.NewRow();
-                row["Estado"] = estado;
+                var strInicial = estado == automata.EstadoInicial ? "->" : string.Empty;
+                row["Estado"] = strInicial + estado.ToString();
 
                 var transiciones = automata.Transiciones.Where(x => x.Origen == estado);
                 var transicionesDict = new Dictionary<string, string>();
