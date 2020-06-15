@@ -39,7 +39,6 @@ namespace AutomataTransicion
             {
                 btnNewEntrada,
                 btnNewEstado,
-                btnSetInicial,
                 btnConvertir,
                 btnNewTransicion
             };
@@ -64,11 +63,21 @@ namespace AutomataTransicion
 
         private void Event_NewEstado(object sender, RoutedEventArgs e)
         {
-            if(textEstado.Text.Trim().Length == 0)
+            var nombre = textEstado.Text.Trim();
+            if(nombre.Length == 0)
             {
                 return;
             }
-            var estado = new Estado(checkEstado.IsChecked == true) { Nombre = textEstado.Text };
+            if (AFND.Estados.Find(x => x.Nombre == nombre) != null)
+            {
+                textEstado.Text = string.Empty;
+                checkEstado.IsChecked = false;
+                textEstado.Focus();
+
+                return;
+            }
+
+            var estado = new Estado(checkEstado.IsChecked == true) { Nombre = nombre };
             
             // Agregar tanto al modelo de datos como a la interfaz
             AFND.Estados.Add(estado);
@@ -86,11 +95,18 @@ namespace AutomataTransicion
 
         private void Event_NewEntrada(object sender, RoutedEventArgs e)
         {
-            if(textEntrada.Text.Trim().Length == 0)
+            var entrada = textEntrada.Text;
+            if(entrada.Length == 0)
             {
                 return;
             }
-            var entrada = textEntrada.Text;
+            if(AFND.Entradas.Find(x => x == entrada) != null)
+            {
+                textEntrada.Text = string.Empty;
+                textEntrada.Focus();
+                btnNewEntrada.IsDefault = true;
+                return;
+            }
 
             AFND.Entradas.Add(entrada);
             lbEntradas.Items.Add(entrada);
@@ -102,18 +118,16 @@ namespace AutomataTransicion
             btnNewEntrada.IsDefault = true;
         }
 
-        private void Event_SetInicial(object sender, RoutedEventArgs e)
+        private void cbInicial_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(cbInicial.SelectedIndex == -1)
+            if (cbInicial.SelectedIndex == -1)
             {
                 return;
             }
-            AFND.EstadoInicial = (Estado) cbInicial.SelectedItem;
+            AFND.EstadoInicial = (Estado)cbInicial.SelectedItem;
 
             lbInicial.Content = $"Inicial --->  {AFND.EstadoInicial.Nombre}";
-            
         }
-
 
         private void Event_NewTransicion(object sender, RoutedEventArgs e)
         {
@@ -165,25 +179,28 @@ namespace AutomataTransicion
 
         private void Event_Eliminar(object sender, RoutedEventArgs e)
         {
-            AFND = new Automata();
+            if(MessageBox.Show("¿Seguro que desea borrar todo?", "Advertencia", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
 
-            cbOrigen.IsEnabled = false;
-            cbDestino.IsEnabled = false;
-            cbEntrada.IsEnabled = false;
-            cbInicial.IsEnabled = false;
+                AFND = new Automata();
 
-            lbEntradas.Items.Clear();
-            lbEstados.Items.Clear();
-            lbTransiciones.Items.Clear();
+                cbOrigen.IsEnabled = false;
+                cbDestino.IsEnabled = false;
+                cbEntrada.IsEnabled = false;
+                cbInicial.IsEnabled = false;
 
-            lbInicial.Content = "";
+                lbEntradas.Items.Clear();
+                lbEstados.Items.Clear();
+                lbTransiciones.Items.Clear();
 
-            cbOrigen.Items.Clear();
-            cbDestino.Items.Clear();
-            cbEntrada.Items.Clear();
-            cbInicial.Items.Clear();
+                lbInicial.Content = "";
 
+                cbOrigen.Items.Clear();
+                cbDestino.Items.Clear();
+                cbEntrada.Items.Clear();
+                cbInicial.Items.Clear();
 
+            }
         }
 
         #endregion
@@ -203,6 +220,5 @@ namespace AutomataTransicion
             SetDefaultButton(btnNewTransicion);
         }
         #endregion
-
     }
 }

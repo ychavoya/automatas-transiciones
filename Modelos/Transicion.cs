@@ -10,4 +10,14 @@ public class Transicion
 	public Transicion()
 	{
 	}
+
+    public override string ToString()
+    {
+		return $"{Origen} --[ {Entrada} ]-> {Destino}";
+    }
+
+	public bool IsEqual(Transicion otra)
+    {
+		return Origen == otra.Origen && Entrada == otra.Entrada && Destino == otra.Destino;
+    }
 }
